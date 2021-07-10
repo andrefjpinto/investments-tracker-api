@@ -1,14 +1,13 @@
-"use strict";
-const { DynamoDBClient, GetItemCommand } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBClient, GetItemCommand } = require('@aws-sdk/client-dynamodb');
 
-const client = new DynamoDBClient({ region: "eu-west-1" });
+const client = new DynamoDBClient({ region: 'eu-west-1' });
 
-module.exports.getBrokers = async (event, context) => {
+module.exports.getBrokers = async () => {
   const params = {
-    TableName: "investments-tracker",
+    TableName: 'investments-tracker',
     Key: {
-      PK: { S: "u#1" },
-      SK: { S: "b#1" },
+      PK: { S: 'u#1' },
+      SK: { S: 'b#1' },
     },
   };
 
