@@ -1,0 +1,86 @@
+service: investments-tracker-api
+
+frameworkVersion: '2'
+
+plugins:
+  - serverless-domain-manager
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  profile: andrefjpinto
+  region: eu-west-1
+  lambdaHashingVersion: '20201221'
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 'dynamodb:GetItem'
+          Resource:
+            Fn::Join:
+              - ':'
+              - - 'arn:aws:dynamodb'
+                - Ref: AWS::Region
+                - Ref: AWS::AccountId
+                - 'table/investments-tracker'
+custom:
+  customDomain:
+    domainName: 'investments-tracker.andrefjpinto.com'
+    basePath: 'api'
+    stage: ${opt:stage, 'dev'}
+    createRoute53Record: true
+
+functions:
+  getBrokers:
+    handler: src/handler.getBrokers
+    events:
+      - http:
+          path: 'brokers'
+          method: get
+          authorizer:
+            arn: arn:aws:cognito-idp:eu-west-1:084024011421:userpool/eu-west-1_F8JWVwovS
+    environment:
+      roles: '[IRP_ADMIN, TEST_GROUP]'
+
+resources:
+  Resources:
+    InvestmentsTrackerCognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        MfaConfiguration: OFF
+        UserPoolName: investments-tracker-${opt:stage, 'dev'}
+        UsernameAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 6
+            RequireLowercase: False
+            RequireNumbers: True
+            RequireSymbols: False
+            RequireUppercase: True
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: investments-tracker-client
+        GenerateSecret: False
+        AllowedOAuthFlowsUserPoolClient: true
+        SupportedIdentityProviders:
+          - COGNITO
+        AllowedOAuthFlows:
+          - implicit
+        CallbackURLs:
+          - https://localhost/callback
+        LogoutURLs:
+          - https://localhost/logout
+        AllowedOAuthScopes:
+          - openid
+          - email
+        UserPoolId:
+          Ref: InvestmentsTrackerCognitoUserPool
+    UserPoolDomain: 
+      Type: AWS::Cognito::UserPoolDomain 
+      Properties:
+        UserPoolId:
+          Ref: InvestmentsTrackerCognitoUserPool
+        Domain: investments-tracker
