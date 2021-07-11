@@ -17,6 +17,7 @@ provider:
         - Effect: 'Allow'
           Action:
             - 'dynamodb:GetItem'
+            - 'dynamodb:Query'
           Resource:
             Fn::Join:
               - ':'
@@ -33,16 +34,25 @@ custom:
 
 functions:
   getBrokers:
-    handler: src/handler.getBrokers
+    handler: src/brokers/handler.getBrokers
     events:
       - http:
           path: 'brokers'
           method: get
           authorizer:
             arn: arn:aws:cognito-idp:eu-west-1:084024011421:userpool/eu-west-1_F8JWVwovS
-    environment:
-      roles: '[IRP_ADMIN, TEST_GROUP]'
-
+            scopes:
+              - email
+  getBroker:
+    handler: src/brokers/handler.getBroker
+    events:
+      - http:
+          path: 'brokers/{id}'
+          method: get
+          authorizer:
+            arn: arn:aws:cognito-idp:eu-west-1:084024011421:userpool/eu-west-1_F8JWVwovS
+            scopes:
+              - email
 resources:
   Resources:
     InvestmentsTrackerCognitoUserPool:

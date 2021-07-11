@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "<!-- title: 'AWS Simple HTTP Endpoint example in NodeJS' description: 'This template demonstrates how to make a simple REST API with Node.js running on AWS Lambda and API Gateway using the traditional Serverless Framework.' layout: Doc framework: v2 platform: AWS language: nodeJS authorLink: 'https://github.com/serverless' authorName: 'Serverless, inc.' authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4' -->",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest src/ --passWithNoTests",
     "lint": "eslint src/"
   },
   "author": "andrefjpinto@gmail.com",
@@ -15,9 +15,9 @@
     "eslint": "^7.30.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.4",
+    "jest": "^27.0.6",
     "serverless-domain-manager": "^5.1.0"
   },
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/andrefjpinto/investments-tracker-api.git"
